@@ -13,19 +13,6 @@ import moviepy
 from moviepy.editor import VideoFileClip
 from moviepy.audio.io.AudioFileClip import AudioFileClip
 
-if len(sys.argv) != 2:
-    print("Usage: vfade.py VIDEO-FILENAME")
-    raise SystemExit
-
-filename = sys.argv[1]
-
-try:
-    clip = VideoFileClip(filename)
-    audio = AudioFileClip(filename)
-except OSError:
-    print(f"File {filename} does not exist")
-    raise SystemExit
-
 def audio_fade(audioclip, fadetime=1, fadein=0, fadeout=0):
     if not fadein:
         fadein = fadetime
@@ -46,7 +33,25 @@ def video_fade(videoclip, fadetime=2, fadein=0, fadeout=0):
     videoclip = moviepy.video.fx.all.fadeout(videoclip, fadeout)
     return videoclip
 
-clip = video_fade(clip)
-clip.audio = audio_fade(audio, fadeout=3)
 
-clip.write_videofile(f"Faded-{filename}", audio_codec='aac')
+def main():
+    if len(sys.argv) != 2:
+        print("Usage: vfade.py VIDEO-FILENAME")
+        return
+
+    filename = sys.argv[1]
+
+    try:
+        clip = VideoFileClip(filename) 
+        audio = AudioFileClip(filename)
+    except OSError:
+        print(f"File {filename} does not exist")
+        return
+
+    clip = video_fade(clip)
+    clip.audio = audio_fade(audio, fadeout=3)
+
+    clip.write_videofile(f"Faded-{filename}", audio_codec='aac')
+
+if __name__=="__main__":
+    main()
